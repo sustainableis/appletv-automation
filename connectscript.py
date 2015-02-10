@@ -33,33 +33,6 @@ def get_display_string():
 
 	return display_string
 
-def count_airparrots():
-
-	pids = find_airparrot_pids();
-	print "Counting airparrots: "
-	print pids
-	if (len(pids) == 1 and pids[0] == ''):
-		print "No airparrots running!"
-		return 0
-	return len(pids)
-
-def find_airparrot_pids():
-	# now lets get a list of all PIDs with process name "AirParrot"
-	pids = subprocess.Popen(
-		["pgrep", "AirParrot"],stdout=subprocess.PIPE).stdout.read().strip().split('\n')
-	return pids
-
-def spawn_airparrots(count, kill):
-
-	print "Spawning " + str(diff) + " AirParrot instances.."
-
-	if (kill):
-		kill_airparrots()
-
-	# open an instance of airparrot for each appletv
-	[subprocess.call(["open", "-n", "/Applications/AirParrot.app"]) for _ in range(count)]
-
-	return
 
 def kill_airparrots():
 
@@ -76,6 +49,17 @@ def get_appletv_names():
 	appletvs.pop()
 
 	return appletvs
+
+def match_appletv_name(appletvs, target):
+
+	# find the appletv name as reported by the OS
+	# that contains the target name
+	for appletv in appletvs:
+
+		if target in appletv:
+			return appletv
+
+
 
 def mirror_display(appletvs, display):
 
@@ -183,18 +167,19 @@ config = ET.parse('sis_display_config.xml')
 
 # get dashboard URL
 dashboard_url = config.find('dashboard_url').text.strip()
+target_appletv = config.find('target_appletv').text.strip()
 
 print "Dashboard URL: " + dashboard_url
+print "Target AppleTV: " + target_appletv
 
 
 appletvs = get_appletv_names()
-print "AppleTV names: " + str(appletvs)
-
+print "OS reports the following AppleTVs: " + str(appletvs)
 
 #get display name
 displayname = get_display_string()
 
-print "Displaying " + displayname
+print "Display string: " + displayname
 
 if check_network():
     print "Network up!"
@@ -208,8 +193,8 @@ scripts.call("display_dashboard", dashboard_url)
 
 time.sleep(4)
 
-# connect applet tvs
-mirror_display(appletvs, displayname)
+# connect apple tv, map target appletv to name reported by OS
+scripts.call("connect_single_apple_tv", match_appletv_name(appletvs, target_appletv), displayname)
 
 time.sleep(2)
 
@@ -237,7 +222,7 @@ while True:
 			# get appletv names again, as they may have changed. 
 			appletvs = get_appletv_names()
 			time.sleep(2)
-			mirror_display(appletvs, displayname)
+			scripts.call("connect_single_apple_tv", match_appletv_name(appletvs, target_appletv), displayname)
 
 			state = 0;
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sis_display_config>
+
+	<!-- Dashboard URL-->
+	<dashboard_url>
+		http://lineage.sustainableis.com/facility/yRb7kzU0i5c3mxI7hR5w/blast
+	</dashboard_url>
+
+	<appletv>Big Room</appletv>
+
+</sis_display_config>
