@@ -239,9 +239,9 @@ while True:
 			continue
 
 		else: 
-			print "Network down, attempting reconnect in 90 seconds.."
+			print "Network down, attempting reconnect in 60 seconds.."
 
-	# Check every 90 seconds
+	# Check every 60 seconds
 	time.sleep(60)
 
 
