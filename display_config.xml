@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sis_display_config>
+
+	<display>
+		<url>		
+			http://lineage.sustainableis.com/facility/yRb7kzU0i5c3mxI7hR5w/blast
+		</url>
+		<appletv>
+			Big Room
+		</appletv>
+	</display>
+
+	<display>
+		<url>		
+			http://lineage.sustainableis.com/facility/yRb7kzU0i5c3mxI7hR5w/blast
+		</url>
+		<appletv>
+			Big Room
+		</appletv>
+	</display>
+
+	<display>
+		<url>		
+			http://lineage.sustainableis.com/facility/yRb7kzU0i5c3mxI7hR5w/blast
+		</url>
+		<appletv>
+			Big Room
+		</appletv>
+	</display>
+
+</sis_display_config>
