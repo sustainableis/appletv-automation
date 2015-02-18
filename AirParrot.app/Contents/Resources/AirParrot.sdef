@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+
+<dictionary title="AirParrot Terminology">    
+        
+    
+    <suite name="Standard Suite" code="????" 
+        description="Common classes and commands for most applications."> 
+        <cocoa name="NSCoreSuite"/> 
+        <command name="count" code="corecnte" description="Return the number of elements of a particular class within an object."> 
+            <cocoa class="NSCountCommand"/> 
+            <direct-parameter description="the object whose elements are to be counted" type="specifier"/> 
+            <parameter name="each" code="kocl" description="The class of objects to be counted." type="type" optional="yes"> 
+                <cocoa key="ObjectClass"/> 
+            </parameter> 
+            <result description="the number of elements" type="integer"/> 
+        </command> 
+        <command name="exists" code="coredoex" 
+            description="Verify if an object exists."> 
+            <cocoa class="NSExistsCommand"/> 
+            <direct-parameter description="the object in question" 
+            type="specifier"/> 
+            <result description="true if it exists, false if not" type="boolean"/> 
+        </command>
+    </suite> 
+    
+    <suite name="AirParrot Suite" code="arpa" description="Common classes and commands for all applications.">
+        <enumeration name="qualities" code="qUAL" description="A video Quality type" inline="4">
+			<enumerator name="Low" code="qLOW" description="Low Quality (Fast)"/>
+			<enumerator name="Medium" code="qMED" description="Medium Quality"/>
+            <enumerator name="High" code="qHIG" description="High Quality"/>
+            <enumerator name="Very High" code="qVEH" description="Very High Quality"/>
+		</enumeration>
+        <enumeration name="enabledDisabled" code="apDE" description="Disabled Enabled State" inline="2">
+			<enumerator name="enabled" code="edEN" description="Enabled State"/>
+			<enumerator name="disabled" code="edDI" description="Disabled State"/>
+		</enumeration>
+        <class name="application" code="capp" description="An application's top level scripting object."> 
+            <cocoa class="NSApplication"/> 
+            <property name="name" code="pnam" description="The name of the application." type="text" access="r"/> 
+            <property name="frontmost" code="pisf" description="Is this the frontmost (active) application?" type="boolean" access="r"> 
+                <cocoa key="isActive"/> 
+            </property> 
+            <property name="version" code="vers" description="The version of the application." type="text" access="r"/> 
+            <property name="audio" code="eAUD" description="Enable Application Airplay Audio" type="enabledDisabled">
+                <cocoa key="enableAudio"/>
+            </property>
+            <property name="selectedDisplay" code="eDIS" description="Set the AirPlay Display" type="display">
+                <cocoa key="display"/>
+            </property>
+            <property name="connectedDevice" code="eDEV" description="Set the AirPlay Device" type="display">
+                <cocoa key="connectedDevice"/>
+            </property>
+            <property name="selectedApplication" code="eAPP" description="Set the AirPlay Application" type="display">
+                <cocoa key="application"/>
+            </property>
+            <property name="videoQuality" code="ePVQ" description="Set the video Quality of AirPlay" type="qualities">
+                <cocoa key="videoQuality"/>
+            </property>
+            <property name="underscan" code="eUND" description="Set the Underscan value 0-20" type="integer">
+                <cocoa key="underscan"/>
+            </property> 
+            <property name="maxFrameRate" code="eFPS" description="Set the Maximum Frames per second value 10-60" type="integer">
+                <cocoa key="maxFrameRate"/>
+            </property> 
+            <property name="tenEightyPSupport" code="e108" description="Enable 1080p on third generation Apple TVs" type="enabledDisabled">
+                <cocoa key="tenEightyPSupport"/>
+            </property>
+            <property name="stretchApps" code="eSTR" description="Stretch apps to fill Apple TV Screen" type="enabledDisabled">
+                <cocoa key="stretchApps"/>
+            </property>
+            <property name="mouseCursor" code="eMSE" description="Show Mouse Cursor" type="enabledDisabled">
+                <cocoa key="mouseCursor"/>
+            </property>
+            <property name="compatabilityMode" code="eCOM" description="Use compatability Mode" type="enabledDisabled">
+                <cocoa key="compatabilityMode"/>
+            </property>
+            <element type="display"> 
+                <cocoa insert-at-beginning="yes" key="displaysArray"/>
+            </element>
+            <element type="device"> 
+                <cocoa insert-at-beginning="yes" key="devicesArray"/>
+            </element>
+            <element type="app"> 
+                <cocoa insert-at-beginning="yes" key="applicationsArray"/>
+            </element>
+        </class>
+        <class name="display" code="aDId" description="Display that can be air played" plural="displays">
+            <cocoa class="APDisplay"/>
+            <property name="name" code="pnam" description="Name of the display" type="text">
+                <cocoa key="displayName"/>
+            </property> 
+            <property name="index" code="dISI" description="Index of the display" type="integer">
+                <cocoa key="index"/>
+            </property> 
+        </class>
+        <class name="device" code="aDev" inherits="display" description="Airplay Device to mirror to" plural="devices">
+            <cocoa class="APDisplay"/>
+        </class>
+        <class name="app" code="aApp" inherits="display" description="Application that will be mirrored" plural="apps">
+            <cocoa class="APDisplay"/>
+        </class>
+    </suite>
+</dictionary>

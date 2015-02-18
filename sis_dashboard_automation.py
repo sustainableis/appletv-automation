@@ -42,11 +42,19 @@ def kill_airparrots():
 
 def get_appletv_names():
 
+		def determine(string):
+
+			if (string is 'Open Displays Preferences'):
+				return True
+			if (string is 'Open Projector Calibrator'):
+				return True
+			return False
+
 	# get appletv names, removing the last element in the list
 	# because that's just a system menu name
 	appletvs = scripts.call("find_appletv_names")
-	time.sleep(1)
-	appletvs.pop()
+	
+	appletvs = [a for a in appletvs if not determine(a)]
 
 	return appletvs
 
@@ -161,13 +169,13 @@ print "******* SIS DASHBOARD AUTOMATION *********"
 
 # ---------- Read config file ---------------
 
+dashboard_url = ""
+target_appletv = ""
+
 #read config
-config = ET.parse('sis_display_config.xml')
-
-
-# get dashboard URL
-dashboard_url = config.find('dashboard_url').text.strip()
-target_appletv = config.find('target_appletv').text.strip()
+with open("config.txt", "r") as f:
+	dashboard_url = f.readline().rstrip()
+	target_appletv = f.readline().rstrip()
 
 print "Dashboard URL: " + dashboard_url
 print "Target AppleTV: " + target_appletv
@@ -186,7 +194,9 @@ if check_network():
 else:
 	print "Network down!" 
 
-time.sleep(2)
+print "Launching Chrome in 10 seconds.."
+
+time.sleep(10)
 
 # open chrome and display dashboard url
 scripts.call("display_dashboard", dashboard_url)

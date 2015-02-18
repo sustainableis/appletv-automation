@@ -1,42 +1,53 @@
 #! /usr/bin/env python
-import os;
+import os
 import xml.etree.ElementTree as ET
 import time
 import applescript
 
 userid_base = 1234
 
-def create_user(name, test):
-	shortname = name.replace(" " "")
+def create_user(name, dryrun):
+	global userid_base
+	shortname = name.replace(" ", "")
 	dscl = 'dscl . create /Users/'
 	createUser = dscl + shortname
 	setShell = dscl + shortname + ' UserShell /bin/bash'
 	realName = dscl + shortname + ' RealName "' + name + '"'
-	setID = dscl + shortname + ' UniqueID '  # append ID here 
+	setID = dscl + shortname + ' UniqueID ' + str(userid_base)
 	primaryGroup = dscl + shortname + ' PrimaryGroupID 1000'
-	homeFolder = dscl + shortname + ' NFSHomeDirectory /Local/Users/' + shortname
-	password = 'dscl . passwd /Users/' + shortname + ' PASSWD' # replace this
-	homeFolderPath = '/Users/' + shortname
+	homeFolder = dscl + shortname + ' NFSHomeDirectory /Users/' + shortname
+	password = 'dscl . passwd /Users/' + shortname + ' sis' # replace this
 
-	if test:
-		print createUser
-		print setShell
-		print realName
-		print setID
-		print primaryGroup
-		print homeFolder
 
-	else:
+	print createUser
+	print setShell
+	print realName
+	print setID
+	print primaryGroup
+	print homeFolder
+
+	if not dryrun:
 		os.system(createUser)
 		os.system(setShell)
 		os.system(realName)
 		os.system(setID)
 		os.system(primaryGroup)
 		os.system(homeFolder)
-		os.system('mkdir ' + homeFolderPath)
-	
-	return homeFolderPath
+		os.system(password)
 
+		userid_base = userid_base + 1
+	
+
+def provision_user(name):
+
+	shortname = name.replace(" ", "")
+	destPath = '/Users/' + shortname
+
+	#os.system('mkdir -p ' + destPath + '/Library/LaunchAgents/')
+	os.system('cp sis_dashboard_automation.py ' + destPath)
+	os.system('cp automation_launcher.scpt ' + destPath)
+	#os.system('cp com.sis.automation_launcher.plist ' + destPath + '/Library/LaunchAgents/')
+	os.system('mv config.txt ' + destPath)
 
 def create_config_file(url, appletv):
 
@@ -45,13 +56,13 @@ def create_config_file(url, appletv):
 		f.write(appletv + "\n")
 
 
-def move_program_files(destPath):
-	os.system('cp sis_dashboard_automation.py ' + destPath)
-	os.system('cp automation_launcher.scpt ' + destPath)
-	os.system('cp com.sis.automation_launcher.plist ' + destPath + '/Library/LaunchAgents/')
-	os.system('mv config.txt ' + destPath)
+def enable_gui_scriptiong():
+	os.system('./tccutil.py --insert com.apple.Terminal')
+	os.system('./tccutil.py --enable com.apple.Terminal')
 
-
+def install_applications():
+	os.system('cp -R -n Google\\ Chrome.app /Applications/')
+	os.system('cp -R -n AirParrot.app /Applications/')
 
 
 # first check for root 
@@ -62,31 +73,41 @@ if os.geteuid() != 0:
 print "Installing py-applescript.."
 os.system("easy_install py-applescript")
 
+time.sleep(2)
+
 # install ElementTree
 print "Installing ElementTree"
 os.system("easy_install elementtree")
+
+print "Enabling GUI scripting for Terminal.app"
+enable_gui_scriptiong()
+
+#print "Installing Chrome and AirParrot"
+#install_applications()
 
 # now we need to read the config file
 config = ET.parse('display_config.xml')
 root = config.getroot()
 
-#get all the display 
-displays = root.findall('display')
 
 # create users and config files for each display
 for display in root.findall('display'):
 
 	# get url and appletv
-	url = display.find('url').text.strip()
 	appletv = display.find('appletv').text.strip()
+	url = display.find('url').text.strip()
+
+
+	print 'Creating user "' + appletv + '"...'
 
 	# username is the same as the appletv name
-	path = create_user(appletv)
+	create_user(appletv, False)
 
-	# create script config file
-	create_config_file(url, appletv)
+	#create_config_file(url, appletv)
 
-	# move program files to newly created user folder
-	move_program_files(path)
+	#provision_user(appletv)
 
+	time.sleep(3)
+
+print "Installation complete.  Log in each new user, set up Chrome, then run provision_users.py to complete setup."
 
