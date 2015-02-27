@@ -42,21 +42,31 @@ def kill_airparrots():
 
 def get_appletv_names():
 
-		def determine(string):
+	displayprefs = u'Open Displays Preferences'
+	projectorcal = u'Open Projector Calibrator'
 
-			if (string is 'Open Displays Preferences'):
-				return True
-			if (string is 'Open Projector Calibrator'):
-				return True
+	def passband(s):
+ 
+		if (displayprefs in s):
 			return False
+		if (projectorcal in s):
+			return False
+
+		return True
 
 	# get appletv names, removing the last element in the list
 	# because that's just a system menu name
 	appletvs = scripts.call("find_appletv_names")
-	
-	appletvs = [a for a in appletvs if not determine(a)]
 
-	return appletvs
+	# let the record show that i tried using filter() and 
+	# a list comprehension. 
+	appletvs_filtered = []
+
+	for appletv in appletvs:
+		if passband(unicode(appletv)):
+			appletvs_filtered.append(appletv)
+
+	return appletvs_filtered
 
 def match_appletv_name(appletvs, target):
 
@@ -66,8 +76,6 @@ def match_appletv_name(appletvs, target):
 
 		if target in appletv:
 			return appletv
-
-
 
 def mirror_display(appletvs, display):
 
@@ -204,12 +212,16 @@ scripts.call("display_dashboard", dashboard_url)
 time.sleep(4)
 
 # connect apple tv, map target appletv to name reported by OS
-scripts.call("connect_single_apple_tv", match_appletv_name(appletvs, target_appletv), displayname)
+print "Connecting target appletv " + target_appletv + "..."
+resolved_appletv = match_appletv_name(appletvs, target_appletv)
+print "Resolved appletv name: " + resolved_appletv 
+scripts.call("connect_single_apple_tv", resolved_appletv, displayname)
 
-time.sleep(2)
+print "Presentation mode in 10 seconds.."
+time.sleep(10)
 
 # enter presentation mode on chrome
-#scripts.call("toggle_presentation_mode")
+scripts.call("toggle_presentation_mode")
 
 
 # now we will loop forever, checking the network state.  if we 
@@ -252,7 +264,7 @@ while True:
 			print "Network down, attempting reconnect in 60 seconds.."
 
 	# Check every 60 seconds
-	time.sleep(60)
+	time.sleep(30)
 
 
 
