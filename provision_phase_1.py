@@ -64,6 +64,11 @@ def install_applications():
 	os.system('cp -R -n Google\\ Chrome.app /Applications/')
 	os.system('cp -R -n AirParrot.app /Applications/')
 
+def disable_sleep():
+	os.system('pmset -a sleep 0')
+	os.system('pmset -a disksleep 0')
+	os.system('pmset -a displaysleep 0')
+
 
 # first check for root 
 if os.geteuid() != 0:
@@ -76,10 +81,10 @@ os.system("easy_install py-applescript")
 time.sleep(2)
 
 # install ElementTree
-print "Installing ElementTree"
+print "Installing ElementTree.."
 os.system("easy_install elementtree")
 
-print "Enabling GUI scripting for Terminal.app"
+print "Enabling GUI scripting for Terminal.app.."
 enable_gui_scriptiong()
 
 #print "Installing Chrome and AirParrot"
@@ -88,6 +93,9 @@ enable_gui_scriptiong()
 # now we need to read the config file
 config = ET.parse('display_config.xml')
 root = config.getroot()
+
+print "Disabling sleep.."
+disable_sleep()
 
 
 # create users and config files for each display

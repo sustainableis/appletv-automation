@@ -93,6 +93,10 @@ def mirror_display(appletvs, display):
 
 	return
 
+def disable_screensaver():
+
+	os.system('defaults -currentHost write com.apple.screensaver idleTime 0')
+
 
 # this object will hold all of our applescript functions
 # as one big string
@@ -201,6 +205,9 @@ if check_network():
     print "Network up!"
 else:
 	print "Network down!" 
+
+print "Disabling screensaver.."
+disable_screensaver()
 
 print "Launching Chrome in 10 seconds.."
 
