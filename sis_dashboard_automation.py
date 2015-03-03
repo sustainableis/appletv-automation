@@ -5,6 +5,8 @@ import subprocess
 import os
 import xml.etree.ElementTree as ET
 import time
+import datetime
+import traceback
 
 def check_network():
     
@@ -54,9 +56,26 @@ def get_appletv_names():
 
 		return True
 
-	# get appletv names, removing the last element in the list
-	# because that's just a system menu name
-	appletvs = scripts.call("find_appletv_names")
+	appletvs = []
+
+	while True:
+		try:
+			# get appletv names, removing the last element in the list
+			# because that's just a system menu name
+			appletvs = scripts.call("find_appletv_names")
+
+		except applescript.ScriptError:
+
+			print "Applescript Error while getting appletv names!"
+			print traceback.format_exc()
+
+			# give a little time for the system to figure out whats up
+			time.sleep(15)
+
+			continue
+
+		# no exception, break
+		break
 
 	# let the record show that i tried using filter() and 
 	# a list comprehension. 
@@ -192,8 +211,11 @@ with open("config.txt", "r") as f:
 print "Dashboard URL: " + dashboard_url
 print "Target AppleTV: " + target_appletv
 
-
+# attempt to get AppleTV names
 appletvs = get_appletv_names()
+
+
+
 print "OS reports the following AppleTVs: " + str(appletvs)
 
 #get display name
@@ -245,8 +267,8 @@ while True:
 		if (state == 1):
 			# disconnected state, network is back up 
 			# attempt to reconnect displays
-
-			print "Network up. Attempting to reconnect displays.."
+			now = str(datetime.datetime.now())
+			print now + ":Network up!\nAttempting to reconnect displays.."
 
 			# get appletv names again, as they may have changed. 
 			appletvs = get_appletv_names()
@@ -256,19 +278,22 @@ while True:
 			state = 0;
 
 	else:
+		now = str(datetime.datetime.now())
 
 		if (state == 0):
 			# connected state, but the network went down
 			# wait a shorter amount of time and then attempt
 			# a reconnect.  If the network is still not up
 			# the normal wait will apply. 
-			print "Network down, attempting reconnect in 20 seconds.."
+
+			print now + ": Network down\nAttempting reconnect in 20 seconds.."
 			state = 1;
 			time.sleep(20)
 			continue
 
 		else: 
-			print "Network down, attempting reconnect in 60 seconds.."
+
+			print now + ": Network down\nAttempting reconnect in 30 seconds.."
 
 	# Check every 60 seconds
 	time.sleep(30)
