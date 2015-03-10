@@ -7,18 +7,27 @@ import xml.etree.ElementTree as ET
 import time
 import datetime
 import traceback
+import urllib2
+
+# def check_network():
+    
+#     #ping google DNS
+#     devnull = open(os.devnull, "w")
+#     status = subprocess.call(["ping", "-c", "1", "8.8.8.8"], 
+#     	stdout=devnull, stderr=devnull)
+
+#     if status == 0:
+#         return True
+#     else:
+#         return False
 
 def check_network():
-    
-    #ping google DNS
-    devnull = open(os.devnull, "w")
-    status = subprocess.call(["ping", "-c", "1", "8.8.8.8"], 
-    	stdout=devnull, stderr=devnull)
 
-    if status == 0:
+    try:
+        response=urllib2.urlopen('http://www.google.com',timeout=1)
         return True
-    else:
-        return False
+    except urllib2.URLError as err: pass
+    return False
 
 def connect_apple_tvs(appletv_dict):
 
@@ -205,21 +214,22 @@ target_appletv = ""
 
 #read config
 with open("config.txt", "r") as f:
-	dashboard_url = f.readline().rstrip()
+	#dashboard_url = f.readline().rstrip()
 	target_appletv = f.readline().rstrip()
 
-print "Dashboard URL: " + dashboard_url
+#print "Dashboard URL: " + dashboard_url
 print "Target AppleTV: " + target_appletv
 
 # attempt to get AppleTV names
-appletvs = get_appletv_names()
+#appletvs = get_appletv_names()
 
 
 
-print "OS reports the following AppleTVs: " + str(appletvs)
+#print "OS reports the following AppleTVs: " + str(appletvs)
 
 #get display name
-displayname = get_display_string()
+#displayname = get_display_string()
+displayname = "Display 1 - (1920x1080)"
 
 print "Display string: " + displayname
 
@@ -231,26 +241,28 @@ else:
 print "Disabling screensaver.."
 disable_screensaver()
 
-print "Launching Chrome in 10 seconds.."
+print "Mirroring in 10 seconds.."
 
 time.sleep(10)
 
 # open chrome and display dashboard url
-scripts.call("display_dashboard", dashboard_url)
+#scripts.call("display_dashboard", dashboard_url)
 
 time.sleep(4)
 
 # connect apple tv, map target appletv to name reported by OS
 print "Connecting target appletv " + target_appletv + "..."
-resolved_appletv = match_appletv_name(appletvs, target_appletv)
-print "Resolved appletv name: " + resolved_appletv 
-scripts.call("connect_single_apple_tv", resolved_appletv, displayname)
+#resolved_appletv = match_appletv_name(appletvs, target_appletv)
+#print "Resolved appletv name: " + resolved_appletv 
+#scripts.call("connect_single_apple_tv", resolved_appletv, displayname)
+scripts.call("connect_single_apple_tv", target_appletv, displayname)
 
-print "Presentation mode in 10 seconds.."
-time.sleep(10)
+
+#print "Presentation mode in 10 seconds.."
+#time.sleep(10)
 
 # enter presentation mode on chrome
-scripts.call("toggle_presentation_mode")
+#scripts.call("toggle_presentation_mode")
 
 
 # now we will loop forever, checking the network state.  if we 
@@ -271,9 +283,11 @@ while True:
 			print now + ":Network up!\nAttempting to reconnect displays.."
 
 			# get appletv names again, as they may have changed. 
-			appletvs = get_appletv_names()
+			#appletvs = get_appletv_names()
 			time.sleep(2)
-			scripts.call("connect_single_apple_tv", match_appletv_name(appletvs, target_appletv), displayname)
+			#scripts.call("connect_single_apple_tv", match_appletv_name(appletvs, target_appletv), displayname)
+			scripts.call("connect_single_apple_tv", target_appletv, displayname)
+
 
 			state = 0;
 
