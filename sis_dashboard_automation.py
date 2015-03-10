@@ -161,8 +161,20 @@ scripts = applescript.AppleScript('''
 		end tell
 	end get_screen_coords
 
+	on disable_underscan()
+		tell application "AirParrot"
+			activate
+
+			set underscan to 0
+
+			set stretchApps to disabled
+
+		end tell
+	end disable_underscan
+
 	on connect_single_apple_tv(appletv_name, display_name)
 		tell application "AirParrot"
+			activate
 			repeat until device appletv_name exists
 				count device
 			end repeat
@@ -173,6 +185,9 @@ scripts = applescript.AppleScript('''
 				set connectedDevice to device named appletv_name
 
 			end if
+
+
+
 		end tell
 	end connect_single_apple_tv
 	
@@ -248,7 +263,7 @@ time.sleep(10)
 # open chrome and display dashboard url
 #scripts.call("display_dashboard", dashboard_url)
 
-time.sleep(4)
+#time.sleep(4)
 
 # connect apple tv, map target appletv to name reported by OS
 print "Connecting target appletv " + target_appletv + "..."
@@ -256,6 +271,12 @@ print "Connecting target appletv " + target_appletv + "..."
 #print "Resolved appletv name: " + resolved_appletv 
 #scripts.call("connect_single_apple_tv", resolved_appletv, displayname)
 scripts.call("connect_single_apple_tv", target_appletv, displayname)
+
+print "Disabling underscan in 10 seconds.."
+time.sleep(10)
+
+scripts.call("disable_underscan")
+
 
 
 #print "Presentation mode in 10 seconds.."
@@ -288,7 +309,9 @@ while True:
 			#scripts.call("connect_single_apple_tv", match_appletv_name(appletvs, target_appletv), displayname)
 			scripts.call("connect_single_apple_tv", target_appletv, displayname)
 
+			time.sleep(4)
 
+			scripts.call("disable_underscan")
 			state = 0;
 
 	else:
